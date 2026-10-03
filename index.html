@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pharma Revenue Predictor – ₹4,000 Cr base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f1f5f4;--panel:#fff;--ink:#12263a;--mute:#5b6b78;--line:#d3dedb;--accent:#0f766e;--warn:#b45309;
+--c0:#0f4c5c;--c1:#1d7a86;--c2:#4aa3a2;--c3:#8cc5b8;--c4:#e0a526;--c5:#9bb1c7;--c6:#5d7391}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a24;--panel:#15252f;--ink:#e6eef0;--mute:#9db0b8;--line:#2a3d48;--accent:#4fd1c0;--warn:#f0b34a;--c0:#2b8a9a;--c1:#3fa5ac;--c2:#66bdb8;--c3:#a5d9cc;--c4:#f0b34a;--c5:#7f97b0;--c6:#5a7391}}
+:root[data-theme="dark"]{--bg:#0e1a24;--panel:#15252f;--ink:#e6eef0;--mute:#9db0b8;--line:#2a3d48;--accent:#4fd1c0;--warn:#f0b34a;--c0:#2b8a9a;--c1:#3fa5ac;--c2:#66bdb8;--c3:#a5d9cc;--c4:#f0b34a;--c5:#7f97b0;--c6:#5a7391}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Instrument Sans",system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
+h1{font:400 clamp(28px,4.5vw,44px)/1.1 "Instrument Serif",Georgia,serif;margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 20px;max-width:64ch}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.panel h2{font:600 15px "Instrument Sans";margin:0 0 10px}
+.seg{display:flex;gap:6px;margin-bottom:14px}
+.seg button{flex:1;padding:8px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;font:inherit;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{margin:0 0 11px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.row b{font-variant-numeric:tabular-nums;font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0 0}
+input[type=number]{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit}
+.hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.hero{display:flex;flex-wrap:wrap;gap:22px 40px;align-items:flex-end;margin-bottom:14px}
+.big{font:400 clamp(44px,7vw,72px)/1 "Instrument Serif",Georgia,serif;color:var(--accent)}
+.big small{font-size:.35em;color:var(--mute);margin-left:6px}
+.kpi{display:flex;flex-wrap:wrap;gap:18px 30px}
+.kpi div{min-width:110px}.kpi span{display:block;color:var(--mute);font-size:12.5px}
+.kpi strong{font-size:19px;font-variant-numeric:tabular-nums}
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--mute);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums;min-width:560px}
+th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+tfoot td{font-weight:600;border-top:2px solid var(--ink)}
+.note{color:var(--mute);font-size:12.5px;margin-top:12px}
+.stack>*+*{margin-top:18px}
+</style></head><body>
+<div class="wrap">
+<h1>Revenue predictor for a ₹4,000 Cr pharma company</h1>
+<p class="sub">Set a scenario, adjust the growth drivers, and see revenue by business line for the next five financial years. All figures are in ₹ crore.</p>
+<div class="grid">
+<div class="panel" id="controls">
+ <h2>Scenario</h2>
+ <div class="seg" id="scen">
+  <button data-s="-3" aria-pressed="false">Bear</button><button data-s="0" aria-pressed="true">Base</button><button data-s="3" aria-pressed="false">Bull</button>
+ </div>
+ <div class="row"><label for="base">Base-year revenue (₹ Cr)</label><input type="number" id="base" value="4000" min="100" step="100"></div>
+ <hr class="hr">
+ <h2>Underlying growth by business line</h2>
+ <div id="segs"></div>
+ <hr class="hr">
+ <h2>Market drivers</h2>
+ <div id="glob"></div>
+</div>
+<div class="stack">
+ <div class="panel">
+  <div class="hero"><div class="big" id="bigv"></div><div class="kpi" id="kpi"></div></div>
+  <svg class="chart" id="chart" viewBox="0 0 640 300" role="img" aria-label="Projected revenue by year with uncertainty range"></svg>
+  <div class="legend" id="legend"></div>
+ </div>
+ <div class="panel"><h2>Revenue by business line</h2><div class="scroll"><table id="tbl"></table></div>
+  <p class="note">Method: each line grows at its underlying rate, adjusted for price controls (India), US price erosion, INR depreciation on USD-linked sales, and new launches added on top. The range on the chart widens each year by the uncertainty you set. This is a planning model, not a forecast of actual results.</p></div>
+</div></div></div>
+<script>
+const SEG=[
+ {n:"India branded formulations",s:.45,g:9,india:.3,usd:0,us:0,l:.4},
+ {n:"US generics",s:.22,g:8,india:0,usd:1,us:1,l:.35},
+ {n:"Emerging markets & RoW",s:.10,g:10,india:0,usd:1,us:0,l:.10},
+ {n:"API & intermediates",s:.08,g:7,india:0,usd:1,us:0,l:0},
+ {n:"CDMO & contract mfg",s:.05,g:15,india:0,usd:1,us:0,l:0},
+ {n:"Govt & institutional",s:.06,g:6,india:.5,usd:0,us:0,l:0},
+ {n:"Consumer health / OTC",s:.04,g:9,india:0,usd:0,us:0,l:.15}];
+const GL=[
+ {k:"hike",n:"India price increase (WPI-linked, scheduled drugs)",v:1.7,min:0,max:6,st:.1,u:"%"},
+ {k:"nlem",n:"Price-control drag on India lines",v:1.0,min:0,max:6,st:.1,u:"%"},
+ {k:"ero",n:"US price erosion",v:6,min:0,max:15,st:.5,u:"%"},
+ {k:"fx",n:"INR depreciation vs USD",v:2,min:-3,max:8,st:.5,u:"%"},
+ {k:"lau",n:"New launches (% of prior-year revenue)",v:1.5,min:0,max:5,st:.1,u:"%"},
+ {k:"mar",n:"EBITDA margin, base year",v:22,min:8,max:35,st:.5,u:"%"},
+ {k:"exp",n:"Margin change per year",v:.3,min:-2,max:2,st:.1,u:" pts"},
+ {k:"vol",n:"Uncertainty per year (range width)",v:3,min:0,max:8,st:.5,u:"%"}];
+const COL=["--c0","--c1","--c2","--c3","--c4","--c5","--c6"];
+const Y0=27, fmt=x=>Math.round(x).toLocaleString("en-IN");
+const $=id=>document.getElementById(id);
+let shift=0;
+function build(){
+ $("segs").innerHTML=SEG.map((s,i)=>`<div class="row"><label for="g${i}"><span>${s.n}</span><b id="gv${i}"></b></label><input type="range" id="g${i}" min="-5" max="25" step=".5" value="${s.g}"></div>`).join("");
+ $("glob").innerHTML=GL.map(g=>`<div class="row"><label for="x${g.k}"><span>${g.n}</span><b id="xv${g.k}"></b></label><input type="range" id="x${g.k}" min="${g.min}" max="${g.max}" step="${g.st}" value="${g.v}"></div>`).join("");
+ document.querySelectorAll("input").forEach(e=>e.addEventListener("input",calc));
+ $("legend").innerHTML=SEG.map((s,i)=>`<span><i style="background:var(${COL[i]})"></i>${s.n}</span>`).join("");
+}
+document.querySelectorAll("#scen button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("#scen button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+ const d=+b.dataset.s;
+ SEG.forEach((s,i)=>$("g"+i).value=s.g+d);
+ const adj={hike:0,nlem:-d/3*-1,ero:-d/3,fx:d/3,lau:d/6,mar:d/3,exp:d/15,vol:0};
+ GL.forEach(g=>{let v=g.v+(adj[g.k]||0);if(g.k==="nlem")v=g.v-d/3;$("x"+g.k).value=Math.max(g.min,Math.min(g.max,v))});
+ calc();});
+function calc(){
+ const base=Math.max(100,+$("base").value||4000);
+ const p={};GL.forEach(g=>{p[g.k]=+$("x"+g.k).value;$("xv"+g.k).textContent=p[g.k]+g.u});
+ let r=SEG.map(s=>base*s.s), rows=[], tot=[base], lo=[base], hi=[base];
+ rows.push(r.slice());
+ SEG.forEach((s,i)=>$("gv"+i).textContent=(+$("g"+i).value)+"%");
+ for(let t=1;t<=5;t++){
+  const prev=rows[t-1], pt=prev.reduce((a,b)=>a+b,0);
+  const nx=prev.map((v,i)=>{const s=SEG[i];
+   let g=+$("g"+i).value/100;
+   g+=s.india*(p.hike-p.nlem)/100*(s.india?1:0);
+   if(s.us)g-=p.ero/100;
+   if(s.usd)g+=p.fx/100;
+   return v*(1+g)+pt*p.lau/100*s.l;});
+  rows.push(nx);const T=nx.reduce((a,b)=>a+b,0);tot.push(T);
+  const w=p.vol/100*Math.sqrt(t);lo.push(T*(1-w));hi.push(T*(1+w));
+ }
+ const T5=tot[5], cagr=(Math.pow(T5/base,.2)-1)*100;
+ const m5=p.mar+p.exp*5, eb5=T5*m5/100, eb0=base*p.mar/100;
+ $("bigv").innerHTML=`₹${fmt(T5)}<small>Cr in FY${Y0+5}</small>`;
+ $("kpi").innerHTML=[["5-year CAGR",cagr.toFixed(1)+"%"],["Added revenue","₹"+fmt(T5-base)+" Cr"],["Likely range","₹"+fmt(lo[5])+"–"+fmt(hi[5])],["EBITDA FY"+(Y0+5),"₹"+fmt(eb5)+" Cr ("+m5.toFixed(1)+"%)"],["EBITDA growth",((eb5/eb0-1)*100).toFixed(0)+"%"]].map(a=>`<div><span>${a[0]}</span><strong>${a[1]}</strong></div>`).join("");
+ draw(rows,tot,lo,hi);
+ const yr=["Base","FY"+(Y0+1),"FY"+(Y0+2),"FY"+(Y0+3),"FY"+(Y0+4),"FY"+(Y0+5)];
+ let h="<thead><tr><th>Business line</th>"+yr.map(y=>`<th>${y}</th>`).join("")+"<th>CAGR</th></tr></thead><tbody>";
+ SEG.forEach((s,i)=>{h+=`<tr><td>${s.n}</td>`+rows.map(rw=>`<td>${fmt(rw[i])}</td>`).join("")+`<td>${((Math.pow(rows[5][i]/rows[0][i],.2)-1)*100).toFixed(1)}%</td></tr>`});
+ h+="</tbody><tfoot><tr><td>Total</td>"+tot.map(v=>`<td>${fmt(v)}</td>`).join("")+`<td>${cagr.toFixed(1)}%</td></tr></tfoot>`;
+ $("tbl").innerHTML=h;
+}
+function draw(rows,tot,lo,hi){
+ const W=640,H=300,L=46,B=30,Tp=26,max=Math.max(...hi)*1.05,bw=62,gap=(W-L-10-6*bw)/5;
+ const y=v=>Tp+(H-Tp-B)*(1-v/max);
+ let s="";
+ for(let i=0;i<=4;i++){const v=max*i/4;s+=`<line x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${fmt(v)}</text>`}
+ rows.forEach((rw,t)=>{
+  const x=L+t*(bw+gap)+gap/2;let acc=0;
+  rw.forEach((v,i)=>{const y1=y(acc+v),y0=y(acc);s+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(0,y0-y1)}" fill="var(${COL[i]})"/>`;acc+=v});
+  const cx=x+bw/2;
+  if(t>0)s+=`<line x1="${cx}" x2="${cx}" y1="${y(lo[t])}" y2="${y(hi[t])}" stroke="var(--ink)" stroke-width="1.5"/><line x1="${cx-6}" x2="${cx+6}" y1="${y(lo[t])}" y2="${y(lo[t])}" stroke="var(--ink)" stroke-width="1.5"/><line x1="${cx-6}" x2="${cx+6}" y1="${y(hi[t])}" y2="${y(hi[t])}" stroke="var(--ink)" stroke-width="1.5"/>`;
+  s+=`<text x="${cx}" y="${y(Math.max(hi[t],tot[t]))-6}" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)">${fmt(tot[t])}</text>`;
+  s+=`<text x="${cx}" y="${H-10}" text-anchor="middle" font-size="11.5" fill="var(--mute)">${t?"FY"+(Y0+t):"Base"}</text>`;
+ });
+ $("chart").innerHTML=s;
+}
+build();calc();
+</script></body></html>
